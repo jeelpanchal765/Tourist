@@ -1,5 +1,3 @@
-const API_KEY = "5ae2e3f221c38a28845f05b6e1f400c5ecb87276ab06d8ed45db371d";
-
 let map;
 let markers = [];
 
@@ -15,7 +13,7 @@ return;
 }
 
 let geo = await fetch(
-`https://api.opentripmap.com/0.1/en/places/geoname?name=${city}&apikey=${API_KEY}`
+`/api/geoname?name=${encodeURIComponent(city)}`
 );
 
 let cityData = await geo.json();
@@ -107,7 +105,7 @@ markers.forEach(m => map.removeLayer(m));
 markers = [];
 
 let res = await fetch(
-`https://api.opentripmap.com/0.1/en/places/radius?radius=5000&lon=${lon}&lat=${lat}&apikey=${API_KEY}`
+`/api/places-radius?lat=${lat}&lon=${lon}`
 );
 
 let data = await res.json();
