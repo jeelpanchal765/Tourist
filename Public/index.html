@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Tourist Guide</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<!-- Leaflet Map JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+</head>
+
+<body>
+
+<header>
+<h1>Tourist Guide</h1>
+<p>Find Best Places to Visit</p>
+</header>
+
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search city...">
+<button onclick="searchPlace()">Search</button>
+</div>
+
+<br>
+
+<button onclick="getLocation()">Detect My Location</button>
+
+<!-- Tourist cards -->
+
+<div class="places">
+
+<div class="card" data-city="agra" onclick="showPlace(27.1751,78.0421,'Taj Mahal')">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/d/da/Taj-Mahal.jpg" width="300" height="200">
+
+<h3>Taj Mahal</h3>
+
+<p>Agra, India</p>
+
+</div>
+
+<div class="card" data-city="goa" onclick="showPlace(15.2993,74.1240,'Goa Beach')">
+
+<img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2" width="300" height="200">
+<h3>Goa Beach</h3>
+
+<p>Goa, India</p>
+
+</div>
+
+<div class="card" data-city="jaipur" onclick="showPlace(26.9239,75.8267,'Hawa Mahal')">
+
+<img src="https://images.unsplash.com/photo-1599661046289-e31897846e41" width="300" height="200">
+<h3>Hawa Mahal</h3>
+
+<p>Jaipur, India</p>
+
+</div>
+
+</div>
+
+<p id="locationText"></p>
+
+<!-- Map -->
+
+<div id="map" style="height:500px;"></div>
+
+<!-- Your JS -->
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
