@@ -43,6 +43,10 @@ let geo = await fetch(
 );
 
 let cityData = await geo.json();
+if(!geo.ok){
+alert(cityData.error || "Search failed. Please try again.");
+return;
+}
 if(!cityData || cityData.lat === undefined || cityData.lon === undefined){
 alert("City not found. Please try another search.");
 return;
@@ -140,6 +144,10 @@ let res = await fetch(
 );
 
 let data = await res.json();
+if(!res.ok || !Array.isArray(data.features)){
+alert(data.error || "Unable to load nearby places right now.");
+return;
+}
 
 data.features.forEach(place=>{
 

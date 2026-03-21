@@ -7,21 +7,40 @@ export default async function handler(req, res) {
     }
 
     const API_KEY = process.env.API_KEY;
-    if (!API_KEY) {
-      return res.status(500).json({ error: "API key not configured on server" });
+    if (API_KEY) {
+      const otpUrl = `https://api.opentripmap.com/0.1/en/places/geoname?name=${encodeURIComponent(
+        name
+      )}&apikey=${API_KEY}`;
+
+      const otpResponse = await fetch(otpUrl);
+      const otpData = await otpResponse.json();
+
+      if (otpData && otpData.lat !== undefined && otpData.lon !== undefined) {
+        return res.status(200).json(otpData);
+      }
     }
 
-    const url = `https://api.opentripmap.com/0.1/en/places/geoname?name=${encodeURIComponent(
+    // Fallback for Vercel when API_KEY is not configured
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
       name
-    )}&apikey=${API_KEY}`;
+    )}`;
+    const nominatimResponse = await fetch(nominatimUrl, {
+      headers: { "User-Agent": "TouristGuide/1.0" },
+    });
+    const nominatimData = await nominatimResponse.json();
 
-    const response = await fetch(url);
-    const data = await response.json();
+    if (!Array.isArray(nominatimData) || nominatimData.length === 0) {
+      return res.status(404).json({ error: "City not found" });
+    }
 
-    res.status(200).json(data);
+    const place = nominatimData[0];
+    return res.status(200).json({
+      name: place.display_name,
+      lat: Number(place.lat),
+      lon: Number(place.lon),
+    });
   } catch (error) {
     console.error("Error in /api/geoname:", error);
-    res.status(500).json({ error: "Failed to fetch geoname data" });
+    return res.status(500).json({ error: "Failed to fetch geoname data" });
   }
 }
-
