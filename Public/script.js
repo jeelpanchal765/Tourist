@@ -29,213 +29,213 @@ const popularPlaces = [
 
 
 // SEARCH CITY
-async function searchPlace(){
+async function searchPlace() {
 
-let city = document.getElementById("searchInput").value;
+  let city = document.getElementById("searchInput").value;
 
-if(city === ""){
-alert("Please enter city name");
-return;
-}
+  if (city === "") {
+    alert("Please enter city name");
+    return;
+  }
 
-let geo = await fetch(
-`/api/geoname?name=${encodeURIComponent(city)}`
-);
+  let geo = await fetch(
+    `/api/geoname?name=${encodeURIComponent(city)}`
+  );
 
-let cityData = await geo.json();
-if(!geo.ok){
-alert(cityData.error || "Search failed. Please try again.");
-return;
-}
-if(!cityData || cityData.lat === undefined || cityData.lon === undefined){
-alert("City not found. Please try another search.");
-return;
-}
+  let cityData = await geo.json();
+  if (!geo.ok) {
+    alert(cityData.error || "Search failed. Please try again.");
+    return;
+  }
+  if (!cityData || cityData.lat === undefined || cityData.lon === undefined) {
+    alert("City not found. Please try another search.");
+    return;
+  }
 
-let lat = cityData.lat;
-let lon = cityData.lon;
-
-
-// move map
-if(!map){
-initMap(lat,lon);
-}else{
-map.setView([lat,lon],10);
-}
+  let lat = cityData.lat;
+  let lon = cityData.lon;
 
 
-// load tourist places
-addTouristPlaces(lat,lon);
-showNearestPopularPlaces(lat, lon, city);
+  // move map
+  if (!map) {
+    initMap(lat, lon);
+  } else {
+    map.setView([lat, lon], 10);
+  }
+
+
+  // load tourist places
+  addTouristPlaces(lat, lon);
+  showNearestPopularPlaces(lat, lon, city);
 
 }
 
 
 
 // INITIAL MAP
-function initMap(lat,lon){
+function initMap(lat, lon) {
 
-map = L.map('map').setView([lat,lon],5);
+  map = L.map('map').setView([lat, lon], 5);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-attribution:'© OpenStreetMap'
-}).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
 
 }
 
 
 
 // DETECT USER LOCATION
-function getLocation(){
+function getLocation() {
 
-if(navigator.geolocation){
+  if (navigator.geolocation) {
 
-navigator.geolocation.getCurrentPosition(function(position){
+    navigator.geolocation.getCurrentPosition(function (position) {
 
-let lat = position.coords.latitude;
-let lon = position.coords.longitude;
+      let lat = position.coords.latitude;
+      let lon = position.coords.longitude;
 
-document.getElementById("locationText").innerHTML =
-"Latitude: "+lat+"<br>Longitude: "+lon;
-
-
-// create map first time
-if(!map){
-initMap(lat,lon);
-}
-else{
-map.setView([lat,lon],8);
-}
+      document.getElementById("locationText").innerHTML =
+        "Latitude: " + lat + "<br>Longitude: " + lon;
 
 
-// user marker
-let userMarker = L.marker([lat,lon])
-.addTo(map)
-.bindPopup("You are here")
-.openPopup();
+      // create map first time
+      if (!map) {
+        initMap(lat, lon);
+      }
+      else {
+        map.setView([lat, lon], 8);
+      }
 
-markers.push(userMarker);
+
+      // user marker
+      let userMarker = L.marker([lat, lon])
+        .addTo(map)
+        .bindPopup("You are here")
+        .openPopup();
+
+      markers.push(userMarker);
 
 
-// load tourist places
-addTouristPlaces(lat,lon);
+      // load tourist places
+      addTouristPlaces(lat, lon);
 
-});
+    });
 
-}else{
+  } else {
 
-alert("Geolocation not supported");
+    alert("Geolocation not supported");
 
-}
+  }
 
 }
 
 
 
 // LOAD TOURIST PLACES FROM API
-async function addTouristPlaces(lat,lon){
+async function addTouristPlaces(lat, lon) {
 
-// remove old markers
-markers.forEach(m => map.removeLayer(m));
-markers = [];
+  // remove old markers
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
 
-let res = await fetch(
-`/api/places-radius?lat=${lat}&lon=${lon}`
-);
+  let res = await fetch(
+    `/api/places-radius?lat=${lat}&lon=${lon}`
+  );
 
-let data = await res.json();
-if(!res.ok || !Array.isArray(data.features)){
-alert(data.error || "Unable to load nearby places right now.");
-return;
+  let data = await res.json();
+  if (!res.ok || !Array.isArray(data.features)) {
+    alert(data.error || "Unable to load nearby places right now.");
+    return;
+  }
+
+  data.features.forEach(place => {
+
+    let coord = place.geometry.coordinates;
+    let name = place.properties.name || "Tourist Place";
+
+    let marker = L.marker([coord[1], coord[0]])
+      .addTo(map)
+      .bindPopup(name);
+
+    markers.push(marker);
+
+  });
+
 }
 
-data.features.forEach(place=>{
-
-let coord = place.geometry.coordinates;
-let name = place.properties.name || "Tourist Place";
-
-let marker = L.marker([coord[1],coord[0]])
-.addTo(map)
-.bindPopup(name);
-
-markers.push(marker);
-
-});
-
+function toRadians(deg) {
+  return deg * (Math.PI / 180);
 }
 
-function toRadians(deg){
-return deg * (Math.PI / 180);
+function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+  const earthRadiusKm = 6371;
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return earthRadiusKm * c;
 }
 
-function calculateDistanceKm(lat1, lon1, lat2, lon2){
-const earthRadiusKm = 6371;
-const dLat = toRadians(lat2 - lat1);
-const dLon = toRadians(lon2 - lon1);
-const a =
-Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-Math.sin(dLon / 2) * Math.sin(dLon / 2);
-const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-return earthRadiusKm * c;
-}
+function showNearestPopularPlaces(lat, lon, searchedCity) {
+  const nearestContainer = document.getElementById("nearestPlaces");
+  if (!nearestContainer) {
+    return;
+  }
 
-function showNearestPopularPlaces(lat, lon, searchedCity){
-const nearestContainer = document.getElementById("nearestPlaces");
-if(!nearestContainer){
-return;
-}
+  const nearest = popularPlaces
+    .map(place => {
+      return {
+        ...place,
+        distance: calculateDistanceKm(lat, lon, place.lat, place.lon)
+      };
+    })
+    .filter(place => place.distance <= NEAREST_MAX_DISTANCE_KM)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 5);
 
-const nearest = popularPlaces
-.map(place => {
-return {
-...place,
-distance: calculateDistanceKm(lat, lon, place.lat, place.lon)
-};
-})
-.filter(place => place.distance <= NEAREST_MAX_DISTANCE_KM)
-.sort((a, b) => a.distance - b.distance)
-.slice(0, 5);
+  if (nearest.length === 0) {
+    nearestContainer.innerHTML =
+      `<h3>Nearest Popular Places for "${searchedCity}"</h3>` +
+      `<p>No popular places found within ${NEAREST_MAX_DISTANCE_KM} km.</p>`;
+    return;
+  }
 
-if(nearest.length === 0){
-nearestContainer.innerHTML =
-`<h3>Nearest Popular Places for "${searchedCity}"</h3>` +
-`<p>No popular places found within ${NEAREST_MAX_DISTANCE_KM} km.</p>`;
-return;
-}
+  nearestContainer.innerHTML =
+    `<h3>Nearest Popular Places for "${searchedCity}"</h3>` +
+    `<p>Showing places within ${NEAREST_MAX_DISTANCE_KM} km</p>` +
+    `<ul>${nearest.map(place =>
+      `<li><strong>${place.name}</strong> - ${place.city} (${place.distance.toFixed(1)} km)</li>`
+    ).join("")}</ul>`;
 
-nearestContainer.innerHTML =
-`<h3>Nearest Popular Places for "${searchedCity}"</h3>` +
-`<p>Showing places within ${NEAREST_MAX_DISTANCE_KM} km</p>` +
-`<ul>${nearest.map(place =>
-`<li><strong>${place.name}</strong> - ${place.city} (${place.distance.toFixed(1)} km)</li>`
-).join("")}</ul>`;
-
-nearest.forEach(place => {
-let marker = L.marker([place.lat, place.lon])
-.addTo(map)
-.bindPopup(`<b>${place.name}</b><br>${place.city}<br>${place.distance.toFixed(1)} km away`);
-markers.push(marker);
-});
+  nearest.forEach(place => {
+    let marker = L.marker([place.lat, place.lon])
+      .addTo(map)
+      .bindPopup(`<b>${place.name}</b><br>${place.city}<br>${place.distance.toFixed(1)} km away`);
+    markers.push(marker);
+  });
 }
 
 
 
 // SHOW PLACE FROM CARD CLICK
-function showPlace(lat,lon,name){
+function showPlace(lat, lon, name) {
 
-if(!map){
-initMap(lat,lon);
-}
-else{
-map.setView([lat,lon],10);
-}
+  if (!map) {
+    initMap(lat, lon);
+  }
+  else {
+    map.setView([lat, lon], 10);
+  }
 
-let marker = L.marker([lat,lon])
-.addTo(map)
-.bindPopup("<b>"+name+"</b><br>Popular Tourist Place")
-.openPopup();
+  let marker = L.marker([lat, lon])
+    .addTo(map)
+    .bindPopup("<b>" + name + "</b><br>Popular Tourist Place")
+    .openPopup();
 
-markers.push(marker);
+  markers.push(marker);
 
 }
