@@ -1,260 +1,301 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Tourist Guide</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tourist Guide — Explore India</title>
+  <meta name="description" content="Discover the most beautiful tourist places across India with our interactive map and travel guide.">
 
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Leaflet Map CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-<!-- Leaflet Map JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
+  <!-- Auth Guard: Redirect to login if not logged in -->
+  <script>
+    if (!sessionStorage.getItem('loggedIn')) {
+      window.location.replace('login.html');
+    }
+  </script>
 </head>
 
 <body>
 
-<header>
-<h1>Tourist Guide</h1>
-<p>Find Best Places to Visit</p>
-</header>
-
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="Search city...">
-<button onclick="searchPlace()">Search</button>
-</div>
-
-<br>
-
-<button onclick="getLocation()">Detect My Location</button>
-
-<!-- Tourist cards -->
-
-<div class="places">
-
-<div class="card" data-city="agra" onclick="showPlace(27.1751,78.0421,'Taj Mahal')">
-
-<img src="https://loremflickr.com/600/400/tajmahal,india?lock=1" width="300" height="200">
-
-<h3>Taj Mahal</h3>
-
-<p>Agra, India</p>
-
-</div>
-
-<div class="card" data-city="goa" onclick="showPlace(15.2993,74.1240,'Goa Beach')">
-
-<img src="https://loremflickr.com/600/400/goa,beach?lock=2" width="300" height="200">
-<h3>Goa Beach</h3>
-
-<p>Goa, India</p>
-
-</div>
-
-<div class="card" data-city="jaipur" onclick="showPlace(26.9239,75.8267,'Hawa Mahal')">
-
-<img src="https://loremflickr.com/600/400/jaipur,palace?lock=3" width="300" height="200">
-<h3>Hawa Mahal</h3>
-
-<p>Jaipur, India</p>
-
-</div>
-
-<div class="card" data-city="delhi" onclick="showPlace(28.6129,77.2295,'India Gate')">
-
-<img src="https://loremflickr.com/600/400/delhi,monument?lock=4" width="300" height="200">
-<h3>India Gate</h3>
-
-<p>Delhi, India</p>
-
-</div>
-
-<div class="card" data-city="amritsar" onclick="showPlace(31.6200,74.8765,'Golden Temple')">
-
-<img src="https://loremflickr.com/600/400/amritsar,temple?lock=5" width="300" height="200">
-<h3>Golden Temple</h3>
-
-<p>Amritsar, India</p>
-
-</div>
-
-<div class="card" data-city="varanasi" onclick="showPlace(25.3176,82.9739,'Kashi Vishwanath Temple')">
-
-<img src="https://loremflickr.com/600/400/varanasi,ghat?lock=6" width="300" height="200">
-<h3>Kashi Vishwanath Temple</h3>
-
-<p>Varanasi, India</p>
-
-</div>
-
-<div class="card" data-city="mumbai" onclick="showPlace(18.9220,72.8347,'Gateway of India')">
-
-<img src="https://loremflickr.com/600/400/mumbai,monument?lock=7" width="300" height="200">
-<h3>Gateway of India</h3>
-
-<p>Mumbai, India</p>
-
-</div>
-
-<div class="card" data-city="udaipur" onclick="showPlace(24.5760,73.6831,'City Palace Udaipur')">
-
-<img src="https://loremflickr.com/600/400/udaipur,palace?lock=8" width="300" height="200">
-<h3>City Palace</h3>
-
-<p>Udaipur, India</p>
-
-</div>
-
-<div class="card" data-city="ahmedabad" onclick="showPlace(23.0225,72.5714,'Sabarmati Riverfront')">
-
-<img src="https://loremflickr.com/600/400/ahmedabad,river?lock=9" width="300" height="200">
-<h3>Sabarmati Riverfront</h3>
-
-<p>Ahmedabad, India</p>
-
-</div>
-
-<div class="card" data-city="hyderabad" onclick="showPlace(17.3616,78.4747,'Charminar')">
-
-<img src="https://loremflickr.com/600/400/hyderabad,monument?lock=10" width="300" height="200">
-<h3>Charminar</h3>
-
-<p>Hyderabad, India</p>
-
-</div>
-
-<div class="card" data-city="mysore" onclick="showPlace(12.3052,76.6552,'Mysore Palace')">
-
-<img src="https://loremflickr.com/600/400/mysore,palace?lock=11" width="300" height="200">
-<h3>Mysore Palace</h3>
-
-<p>Mysore, India</p>
-
-</div>
-
-<div class="card" data-city="hampi" onclick="showPlace(15.3350,76.4600,'Hampi')">
-
-<img src="https://loremflickr.com/600/400/hampi,ruins?lock=12" width="300" height="200">
-<h3>Hampi</h3>
-
-<p>Karnataka, India</p>
-
-</div>
-
-<div class="card" data-city="kochi" onclick="showPlace(9.9312,76.2673,'Fort Kochi')">
-
-<img src="https://loremflickr.com/600/400/kochi,kerala?lock=13" width="300" height="200">
-<h3>Fort Kochi</h3>
-
-<p>Kochi, India</p>
-
-</div>
-
-<div class="card" data-city="chennai" onclick="showPlace(13.0475,80.2824,'Marina Beach')">
-
-<img src="https://loremflickr.com/600/400/chennai,beach?lock=14" width="300" height="200">
-<h3>Marina Beach</h3>
-
-<p>Chennai, India</p>
-
-</div>
-
-<div class="card" data-city="kolkata" onclick="showPlace(22.5448,88.3426,'Victoria Memorial')">
-
-<img src="https://loremflickr.com/600/400/kolkata,monument?lock=15" width="300" height="200">
-<h3>Victoria Memorial</h3>
-
-<p>Kolkata, India</p>
-
-</div>
-
-<div class="card" data-city="bhubaneswar" onclick="showPlace(20.2380,85.8338,'Lingaraj Temple')">
-
-<img src="https://loremflickr.com/600/400/bhubaneswar,temple?lock=16" width="300" height="200">
-<h3>Lingaraj Temple</h3>
-
-<p>Bhubaneswar, India</p>
-
-</div>
-
-<div class="card" data-city="darjeeling" onclick="showPlace(27.0360,88.2627,'Darjeeling Hills')">
-
-<img src="https://loremflickr.com/600/400/darjeeling,hills?lock=17" width="300" height="200">
-<h3>Darjeeling</h3>
-
-<p>West Bengal, India</p>
-
-</div>
-
-<div class="card" data-city="sikkim" onclick="showPlace(27.3389,88.6065,'Tsomgo Lake')">
-
-<img src="https://loremflickr.com/600/400/sikkim,lake?lock=18" width="300" height="200">
-<h3>Tsomgo Lake</h3>
-
-<p>Sikkim, India</p>
-
-</div>
-
-<div class="card" data-city="shillong" onclick="showPlace(25.5788,91.8933,'Shillong Peak')">
-
-<img src="https://loremflickr.com/600/400/shillong,meghalaya?lock=19" width="300" height="200">
-<h3>Shillong Peak</h3>
-
-<p>Meghalaya, India</p>
-
-</div>
-
-<div class="card" data-city="gangtok" onclick="showPlace(27.3314,88.6138,'MG Marg Gangtok')">
-
-<img src="https://loremflickr.com/600/400/gangtok,sikkim?lock=20" width="300" height="200">
-<h3>MG Marg</h3>
-
-<p>Gangtok, India</p>
-
-</div>
-
-<div class="card" data-city="bhopal" onclick="showPlace(23.2599,77.4126,'Upper Lake')">
-
-<img src="https://loremflickr.com/600/400/bhopal,lake?lock=21" width="300" height="200">
-<h3>Upper Lake</h3>
-
-<p>Bhopal, India</p>
-
-</div>
-
-<div class="card" data-city="khajuraho" onclick="showPlace(24.8318,79.9199,'Khajuraho Temples')">
-
-<img src="https://loremflickr.com/600/400/khajuraho,temple?lock=22" width="300" height="200">
-<h3>Khajuraho Temples</h3>
-
-<p>Madhya Pradesh, India</p>
-
-</div>
-
-<div class="card" data-city="raipur" onclick="showPlace(21.2514,81.6296,'Nandan Van Zoo')">
-
-<img src="https://loremflickr.com/600/400/raipur,park?lock=23" width="300" height="200">
-<h3>Nandan Van</h3>
-
-<p>Raipur, India</p>
-
-</div>
-
-</div>
-
-<p id="locationText"></p>
-<div id="nearestPlaces"></div>
-
-<!-- Map -->
-
-<div id="map" style="height:500px;"></div>
-
-<!-- Your JS -->
-
-<script src="script.js"></script>
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo" id="nav-logo">
+      <div class="nav-logo-icon">✈️</div>
+      <span class="nav-logo-text">TouristGuide</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-user-email" id="nav-user-email">👤 <span id="user-email-text"></span></span>
+      <button class="btn-nav-login" id="btn-logout" onclick="logout()">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <script>
+    // Show logged in user's email
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (userEmail) {
+      document.getElementById('user-email-text').textContent = userEmail;
+    }
+    function logout() {
+      sessionStorage.removeItem('loggedIn');
+      sessionStorage.removeItem('userEmail');
+      window.location.href = 'login.html';
+    }
+  </script>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero">
+    <div class="hero-badge">🌏 India's #1 Travel Companion</div>
+
+    <h1 class="hero-title">
+      Discover <span class="gradient-text">Incredible</span><br>Places to Explore
+    </h1>
+
+    <p class="hero-subtitle">
+      From the snow-capped Himalayas to sun-kissed beaches — your next adventure awaits.
+    </p>
+
+    <div class="search-box" id="search-box">
+      <input type="text" id="searchInput" placeholder="🔍  Search a city... e.g. Goa, Delhi">
+      <button id="btn-search" onclick="searchPlace()">Search</button>
+    </div>
+
+    <button class="btn-location" id="btn-detect-location" onclick="getLocation()">
+      📍 Detect My Location
+    </button>
+  </section>
+
+  <!-- ===== TOURIST PLACES SECTION ===== -->
+  <div class="section-header">
+    <h2 class="section-title">🏛️ Popular Destinations</h2>
+    <p class="section-subtitle">Click on a place to view it on the map</p>
+  </div>
+
+  <div class="places-wrapper">
+    <div class="places" id="places-container">
+
+      <div class="card" data-city="agra" onclick="showPlace(27.1751,78.0421,'Taj Mahal')" id="card-taj-mahal">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/tajmahal,india?lock=1" alt="Taj Mahal">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Taj Mahal</h3>
+          <p>📍 Agra, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="goa" onclick="showPlace(15.2993,74.1240,'Goa Beach')" id="card-goa">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/goa,beach?lock=2" alt="Goa Beach">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Goa Beach</h3>
+          <p>📍 Goa, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="jaipur" onclick="showPlace(26.9239,75.8267,'Hawa Mahal')" id="card-hawa-mahal">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/jaipur,palace?lock=3" alt="Hawa Mahal">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Hawa Mahal</h3>
+          <p>📍 Jaipur, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="delhi" onclick="showPlace(28.6129,77.2295,'India Gate')" id="card-india-gate">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/delhi,monument?lock=4" alt="India Gate">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>India Gate</h3>
+          <p>📍 Delhi, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="amritsar" onclick="showPlace(31.6200,74.8765,'Golden Temple')" id="card-golden-temple">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/amritsar,temple?lock=5" alt="Golden Temple">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Golden Temple</h3>
+          <p>📍 Amritsar, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="varanasi" onclick="showPlace(25.3176,82.9739,'Kashi Vishwanath Temple')" id="card-kashi">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/varanasi,ghat?lock=6" alt="Kashi Vishwanath Temple">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Kashi Vishwanath</h3>
+          <p>📍 Varanasi, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="mumbai" onclick="showPlace(18.9220,72.8347,'Gateway of India')" id="card-gateway">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/mumbai,monument?lock=7" alt="Gateway of India">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Gateway of India</h3>
+          <p>📍 Mumbai, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="udaipur" onclick="showPlace(24.5760,73.6831,'City Palace Udaipur')" id="card-city-palace">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/udaipur,palace?lock=8" alt="City Palace">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>City Palace</h3>
+          <p>📍 Udaipur, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="ahmedabad" onclick="showPlace(23.0225,72.5714,'Sabarmati Riverfront')" id="card-sabarmati">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/ahmedabad,river?lock=9" alt="Sabarmati Riverfront">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Sabarmati Riverfront</h3>
+          <p>📍 Ahmedabad, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="hyderabad" onclick="showPlace(17.3616,78.4747,'Charminar')" id="card-charminar">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/hyderabad,monument?lock=10" alt="Charminar">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Charminar</h3>
+          <p>📍 Hyderabad, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="mysore" onclick="showPlace(12.3052,76.6552,'Mysore Palace')" id="card-mysore">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/mysore,palace?lock=11" alt="Mysore Palace">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Mysore Palace</h3>
+          <p>📍 Mysore, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="hampi" onclick="showPlace(15.3350,76.4600,'Hampi')" id="card-hampi">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/hampi,ruins?lock=12" alt="Hampi">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Hampi</h3>
+          <p>📍 Karnataka, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="kochi" onclick="showPlace(9.9312,76.2673,'Fort Kochi')" id="card-fort-kochi">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/kochi,kerala?lock=13" alt="Fort Kochi">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Fort Kochi</h3>
+          <p>📍 Kochi, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="chennai" onclick="showPlace(13.0475,80.2824,'Marina Beach')" id="card-marina">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/chennai,beach?lock=14" alt="Marina Beach">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Marina Beach</h3>
+          <p>📍 Chennai, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="kolkata" onclick="showPlace(22.5448,88.3426,'Victoria Memorial')" id="card-victoria">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/kolkata,monument?lock=15" alt="Victoria Memorial">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Victoria Memorial</h3>
+          <p>📍 Kolkata, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="darjeeling" onclick="showPlace(27.0360,88.2627,'Darjeeling Hills')" id="card-darjeeling">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/darjeeling,hills?lock=17" alt="Darjeeling">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Darjeeling</h3>
+          <p>📍 West Bengal, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="sikkim" onclick="showPlace(27.3389,88.6065,'Tsomgo Lake')" id="card-tsomgo">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/sikkim,lake?lock=18" alt="Tsomgo Lake">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Tsomgo Lake</h3>
+          <p>📍 Sikkim, India</p>
+        </div>
+      </div>
+
+      <div class="card" data-city="khajuraho" onclick="showPlace(24.8318,79.9199,'Khajuraho Temples')" id="card-khajuraho">
+        <div class="card-img-wrapper">
+          <img src="https://loremflickr.com/600/400/khajuraho,temple?lock=22" alt="Khajuraho Temples">
+          <div class="card-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>Khajuraho Temples</h3>
+          <p>📍 Madhya Pradesh, India</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== NEAREST PLACES ===== -->
+  <p id="locationText"></p>
+  <div id="nearestPlaces"></div>
+
+  <!-- ===== MAP ===== -->
+  <div class="map-section">
+    <h2>🗺️ Interactive Map</h2>
+    <div id="map"></div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>Made with <span>♥</span> for travelers | © 2025 TouristGuide India</p>
+  </footer>
+
+  <!-- JS -->
+  <script src="script.js"></script>
 
 </body>
-
 </html>
