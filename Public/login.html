@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — TouristGuide India</title>
-  <meta name="description" content="Sign in to your TouristGuide account to save your favorite places and plan your next trip.">
+  <title>Login — JP Tourist Guide India</title>
+  <meta name="description" content="Sign in to your JP Tourist Guide account to save your favorite places and plan your next trip.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -80,7 +80,7 @@
         } else if (err.message && err.message.includes('@gmail.com')) {
           msgEl.textContent = '❌ Only @gmail.com accounts are allowed!';
         } else if (err.code === 'auth/unauthorized-domain') {
-          msgEl.textContent = '⚠️ Domain not authorized. Add localhost to Firebase Console.';
+          msgEl.textContent = `⚠️ Domain not authorized. Add '${window.location.hostname}' to Firebase Console.`;
         } else if (err.code === 'auth/operation-not-allowed') {
           msgEl.textContent = '❌ Google Auth is not enabled in Firebase Console. Go to Authentication > Sign-in method and enable Google.';
         } else {
@@ -109,7 +109,7 @@
   <nav class="navbar">
     <a href="index.html" class="nav-logo" id="nav-logo-login">
       <div class="nav-logo-icon">✈️</div>
-      <span class="nav-logo-text">TouristGuide</span>
+      <span class="nav-logo-text">JP Tourist Guide</span>
     </a>
   </nav>
 

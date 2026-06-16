@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       name
     )}`;
     const nominatimResponse = await fetch(nominatimUrl, {
-      headers: { "User-Agent": "TouristGuide/1.0" },
+      headers: { "User-Agent": "JPTouristGuide/1.0" },
     });
     const nominatimData = await nominatimResponse.json();
 
